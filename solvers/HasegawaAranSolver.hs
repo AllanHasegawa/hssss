@@ -1,9 +1,8 @@
-import SudokuInput as SI
+import SudokuUtils as SU
 
 myf :: SudokuBoard -> SudokuBoard
 myf f = f
 
 main = do
-	problem <- SI.solveProblem 44900 myf
-	print problem
+	SU.solveProblem 44900 myf
 	-- print $ head problem 

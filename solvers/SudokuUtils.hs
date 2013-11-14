@@ -1,4 +1,4 @@
-module SudokuInput
+module SudokuUtils
 (
 SudokuBoard,
 solveProblem
@@ -14,7 +14,7 @@ solveProblem problemIndex solver
 	| problemIndex >= 0 = (do
 		handle <- openFile "../problems/sudoku17.txt" ReadMode
 		contents <- hGetContents handle
-		print (stringToSudokuBoard $ lines contents !! problemIndex)
+		print (solver $ stringToSudokuBoard $ lines contents !! problemIndex)
 		hClose handle
 		)
 	| otherwise = print "WAT?"
