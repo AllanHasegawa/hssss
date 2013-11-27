@@ -6,8 +6,9 @@ solveProblem
 
 import System.IO
 import Data.Char
+import Data.List
 
-data SudokuUnit = Empty | Hint Int | Guess Int deriving (Show)
+data SudokuUnit = Empty | Hint Int | Guess Int deriving (Show,Read,Eq)
 
 -- sS :: size of the small square
 -- bS :: size of the big square
@@ -16,7 +17,7 @@ data SudokuBoard = SudokuBoard {
 				sS :: Int,
 				bS :: Int,
 				board :: [SudokuUnit]
-			} deriving (Show)
+			} deriving (Show,Read)
 
 
 solveProblem :: Int -> (SudokuBoard -> SudokuBoard) -> IO ()
@@ -30,13 +31,57 @@ solveProblem problemIndex solver
 		print $ getRowBS 7 $ sudokuBoard
 		print $ getSS 7 $ sudokuBoard
 		putStr $ sudokuBoardToFancyString sudokuBoard
+		print $ verifySolutionRows sudokuBoard
+		print $ getRowBS 0 sudokuBoard
 		hClose handle
 		)
 	| otherwise = print "WAT?"
 
-
+-- verify if solution is correct
+-- True solution is correct
+-- False solution is wrong
 verifySolution :: SudokuBoard -> Bool
-verifySolution b = True 
+verifySolution b = and $ sequence
+	[verifySolutionRows,verifySolutionCols,verifySolutionSS] b
+
+verifySolutionSS :: SudokuBoard -> Bool
+verifySolutionSS sBoard = let
+	sBS = bS sBoard
+	sSs = getSSs sBoard
+	filtered = filter (\x -> (length $ uniqueSudokuUnits x) == sBS) sSs
+	in (length filtered) > 0
+
+verifySolutionRows :: SudokuBoard -> Bool
+verifySolutionRows sBoard = let
+	sBS = bS sBoard
+	rows = getRowsBS sBoard
+	filtered = filter (\x -> (length $ uniqueSudokuUnits x) == sBS) rows
+	in (length filtered) > 0
+	
+verifySolutionCols :: SudokuBoard -> Bool
+verifySolutionCols sBoard = let
+	sBS = bS sBoard
+	cols = getColsBS sBoard
+	filtered = filter (\x -> (length $ uniqueSudokuUnits x) == sBS) cols
+	in (length filtered) > 0
+
+-- get ALL small squares from big square
+getSSs :: SudokuBoard -> [[SudokuUnit]]
+getSSs sBoard = let
+	sBS = bS sBoard
+	in map (flip getSS sBoard) [0..(sBS-1)]
+
+-- get ALL cols from big square
+getColsBS :: SudokuBoard -> [[SudokuUnit]]
+getColsBS sBoard = let
+	sBS = bS sBoard
+	in map (flip getColBS sBoard) [0..(sBS-1)]
+
+-- get ALL rows from big square
+getRowsBS :: SudokuBoard -> [[SudokuUnit]]
+getRowsBS sBoard = let
+	sBS = bS sBoard
+	in map (flip getRowBS sBoard) [0..(sBS-1)]
 
 -- get row (big square)
 getRowBS :: Int -> SudokuBoard -> [SudokuUnit]
@@ -81,6 +126,9 @@ getSumSS ssIndex sBoard
 	| ssIndex >= sS sBoard = Nothing
 	| otherwise = Nothing
 
+-- Returns uniques values (without Empty)
+uniqueSudokuUnits :: [SudokuUnit] -> [SudokuUnit]
+uniqueSudokuUnits sUnits = filter (\x -> x /= Empty) $  nub sUnits
 
 -- Transforms a string line into Sudokuboard.
 -- It should be okay for inputs with numbers <9.
@@ -146,3 +194,7 @@ subslice from to step sub list
 		++ (subslice (from+step) to step sub list)
 
 defaultProblems = [10,500,4040,50340,30450]
+
+getPureProblem :: SudokuBoard
+--getPureProblem = read "SudokuBoard {sS = 3, bS = 9, board = [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Hint 1,Empty,Hint 4,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Hint 2,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Hint 5,Empty,Hint 4,Empty,Hint 7,Empty,Empty,Hint 8,Empty,Empty,Empty,Hint 3,Empty,Empty,Empty,Empty,Hint 1,Empty,Hint 9,Empty,Empty,Empty,Empty,Hint 3,Empty,Empty,Hint 4,Empty,Empty,Hint 2,Empty,Empty,Empty,Hint 5,Empty,Hint 1,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Hint 8,Empty,Hint 6,Empty,Empty,Empty]}"
+getPureProblem = read "SudokuBoard {sS = 3, bS = 9, board = [Hint 2,Hint 3,Hint 4,Hint 5,Hint 6,Hint 7,Hint 8,Hint 1,Hint 9,Hint 4,Hint 1,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Hint 2,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Hint 5,Empty,Hint 4,Empty,Hint 7,Empty,Empty,Hint 8,Empty,Empty,Empty,Hint 3,Empty,Empty,Empty,Empty,Hint 1,Empty,Hint 9,Empty,Empty,Empty,Empty,Hint 3,Empty,Empty,Hint 4,Empty,Empty,Hint 2,Empty,Empty,Empty,Hint 5,Empty,Hint 1,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Hint 8,Empty,Hint 6,Empty,Empty,Empty]}"
