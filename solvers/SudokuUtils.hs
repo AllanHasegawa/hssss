@@ -134,15 +134,15 @@ uniqueSudokuUnits sUnits = filter (\x -> x /= Empty) $  nub sUnits
 -- It should be okay for inputs with numbers <9.
 stringToSudokuBoard :: String -> SudokuBoard
 stringToSudokuBoard str = let
-				sizeBS = floor . sqrt . fromIntegral . length $ str
-				sizeSS = floor . sqrt . fromIntegral $ sizeBS
-				nList = [
-					if x == '0' then
-						Empty
-					else
-						Hint $ digitToInt x
-					| x <- str]
-	         	  in SudokuBoard sizeSS sizeBS nList 
+	sizeBS = floor . sqrt . fromIntegral . length $ str
+	sizeSS = floor . sqrt . fromIntegral $ sizeBS
+	nList = [
+		if x == '0' then
+			Empty
+		else
+			Hint $ digitToInt x
+		| x <- str]
+	in SudokuBoard sizeSS sizeBS nList 
 
 -- Print a SudokuUnit simplified
 sudokuUnitToString :: SudokuUnit -> String
