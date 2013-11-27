@@ -24,7 +24,8 @@ solveProblem problemIndex solver
 		handle <- openFile "../problems/sudoku17.txt" ReadMode
 		contents <- hGetContents handle
 		print (solver $ stringToSudokuBoard $ lines contents !! problemIndex)
-		print $ getRowBS 8 $ stringToSudokuBoard $ lines contents !! problemIndex
+		print $ getRowBS 7 $ stringToSudokuBoard $ lines contents !! problemIndex
+		print $ getSS 7 $ stringToSudokuBoard $ lines contents !! problemIndex
 		hClose handle
 		)
 	| otherwise = print "WAT?"
@@ -59,8 +60,15 @@ getColBS colIndex sBoard
 		 	in slice pInitial (length $ b) steps b
 
 -- get a small square from a big square
-getSS :: Int -> SudokuBoard -> SudokuBoard
-getSS ssIndex sBoard = sBoard
+getSS :: Int -> SudokuBoard -> [SudokuUnit]
+getSS ssIndex sBoard = let
+	sBS = bS sBoard
+	sSS = sS sBoard
+	step = sBS
+	b = board sBoard
+	i = ssIndex `mod` sSS
+	initial = ((ssIndex `div` sSS) * sBS * sSS) + (i * sSS)
+	in subslice initial (initial + (sSS*sBS)) sBS sSS b
 
 
 getSumSS :: Int -> SudokuBoard -> Maybe Int
@@ -89,9 +97,20 @@ list1DTo2D :: Int -> [a] -> [[a]]
 list1DTo2D _ [] = []
 list1DTo2D n l = [take n l] ++ (list1DTo2D n $ drop n l)
 
+-- slice function. Equivalent to list[from:to:step] in Python
 slice :: Int -> Int -> Int -> [a] -> [a]
 slice from to step list
 	| from >= to = []
+	| step == 1 = take (to-from) . drop from $ list
 	| otherwise = [(list !! from)] ++ (slice (from+step) to step list)
+
+-- slice function, but takes "sublists".
+-- Example: subslice 1 8 2 3 "abcdefgh" == "bcdefgh"
+subslice :: Int -> Int -> Int -> Int -> [a] -> [a]
+subslice from to step sub list
+	| sub == 1 = slice from to step list
+	| from >= to = []
+	| otherwise = (slice from (from+sub) 1 list)
+		++ (subslice (from+step) to step sub list)
 
 defaultProblems = [10,500,4040,50340,30450]
