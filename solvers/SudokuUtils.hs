@@ -23,9 +23,11 @@ solveProblem problemIndex solver
 	| problemIndex >= 0 = (do
 		handle <- openFile "../problems/sudoku17.txt" ReadMode
 		contents <- hGetContents handle
-		print (solver $ stringToSudokuBoard $ lines contents !! problemIndex)
-		print $ getRowBS 7 $ stringToSudokuBoard $ lines contents !! problemIndex
-		print $ getSS 7 $ stringToSudokuBoard $ lines contents !! problemIndex
+		let sudokuLine = lines contents !! problemIndex
+		let sudokuBoard = stringToSudokuBoard sudokuLine
+		print $ solver sudokuBoard
+		print $ getRowBS 7 $ sudokuBoard
+		print $ getSS 7 $ sudokuBoard
 		hClose handle
 		)
 	| otherwise = print "WAT?"
