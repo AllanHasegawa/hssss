@@ -18,6 +18,7 @@ data SudokuBoard = SudokuBoard {
 				board :: [SudokuUnit]
 			} deriving (Show)
 
+
 solveProblem :: Int -> (SudokuBoard -> SudokuBoard) -> IO ()
 solveProblem problemIndex solver
 	| problemIndex >= 0 = (do
@@ -28,6 +29,7 @@ solveProblem problemIndex solver
 		print $ solver sudokuBoard
 		print $ getRowBS 7 $ sudokuBoard
 		print $ getSS 7 $ sudokuBoard
+		putStr $ sudokuBoardToFancyString sudokuBoard
 		hClose handle
 		)
 	| otherwise = print "WAT?"
@@ -93,6 +95,34 @@ stringToSudokuBoard str = let
 						Hint $ digitToInt x
 					| x <- str]
 	         	  in SudokuBoard sizeSS sizeBS nList 
+
+-- Print a SudokuUnit simplified
+sudokuUnitToString :: SudokuUnit -> String
+sudokuUnitToString Empty = "."
+sudokuUnitToString (Hint n) = show n
+sudokuUnitToString (Guess n) = show n
+
+sudokuBoardToFancyString'' :: SudokuBoard -> Int -> String
+sudokuBoardToFancyString'' sBoard n
+	| n `mod` (sBS*sSS) == 0 =  "\n\n"
+	| n `mod` sBS == 0 = "\n"
+	| n `mod` sSS == 0 = " "
+	| otherwise = []
+	where 	sSS = sS sBoard
+		sBS = bS sBoard
+
+sudokuBoardToFancyString' :: Int -> SudokuBoard -> [SudokuUnit] -> String
+sudokuBoardToFancyString' _ _ [] = "\n"
+sudokuBoardToFancyString' n sBoard sUnits@(x:xs) = 
+	(sudokuBoardToFancyString'' sBoard n)
+	++ (sudokuUnitToString x)
+	++ " "
+	++ (sudokuBoardToFancyString' (n+1) sBoard xs)
+
+-- Creates a easy fo see string of the sudoku board
+sudokuBoardToFancyString :: SudokuBoard -> String
+sudokuBoardToFancyString sBoard =
+	sudokuBoardToFancyString' 0 sBoard (board sBoard)
 
 -- Aux functions
 list1DTo2D :: Int -> [a] -> [[a]]
