@@ -24,7 +24,7 @@ solveProblem problemIndex solver
 		handle <- openFile "../problems/sudoku17.txt" ReadMode
 		contents <- hGetContents handle
 		print (solver $ stringToSudokuBoard $ lines contents !! problemIndex)
-		print (getRowBS (stringToSudokuBoard $ lines contents !! problemIndex) 6)
+		print $ getRowBS 8 $ stringToSudokuBoard $ lines contents !! problemIndex
 		hClose handle
 		)
 	| otherwise = print "WAT?"
@@ -34,7 +34,8 @@ verifySolution :: SudokuBoard -> Bool
 verifySolution b = True 
 
 -- get row (big square)
-getRowBS sBoard rowIndex
+getRowBS :: Int -> SudokuBoard -> [SudokuUnit]
+getRowBS rowIndex sBoard
 		| rowIndex < 0 = [Empty]
 		| rowIndex >= bS sBoard = [Empty]
 		| otherwise = let
@@ -45,8 +46,8 @@ getRowBS sBoard rowIndex
 		 	in slice pInitial (pInitial+sBS) 1 b
 
 -- get column (big square)
-getColBS :: SudokuBoard -> Int -> [SudokuUnit]
-getColBS sBoard colIndex
+getColBS :: Int -> SudokuBoard -> [SudokuUnit]
+getColBS colIndex sBoard 
 		| colIndex < 0 = [Empty]
 		| colIndex >= bS sBoard = [Empty]
 		| otherwise = let
@@ -56,6 +57,17 @@ getColBS sBoard colIndex
 				steps = bS sBoard
 				pInitial = colIndex
 		 	in slice pInitial (length $ b) steps b
+
+-- get a small square from a big square
+getSS :: Int -> SudokuBoard -> SudokuBoard
+getSS ssIndex sBoard = sBoard
+
+
+getSumSS :: Int -> SudokuBoard -> Maybe Int
+getSumSS ssIndex sBoard 
+	| ssIndex < 0 = Nothing
+	| ssIndex >= sS sBoard = Nothing
+	| otherwise = Nothing
 
 
 -- Transforms a string line into Sudokuboard.
