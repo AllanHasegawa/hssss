@@ -5,6 +5,9 @@ SudokuUnit(..),
 solveProblem,
 updateBoard,
 verifySolution,
+isGuess,
+isHint,
+isEmpty,
 getColsBS,
 getRowsBS,
 getColBS,
@@ -97,6 +100,15 @@ verifySolutionCols sBoard = let
 	cols = getColsBS sBoard
 	filtered = filter (\x -> (length $ uniqueSudokuUnits x) == sBS) cols
 	in (length filtered) > 0
+
+isGuess (Guess _) = True
+isGuess _ = False
+
+isHint (Hint _) = True
+isHint _ = False
+
+isEmpty Empty = True
+isEmpty _ = False
 
 -- get ALL small squares from big square
 getSSs :: SudokuBoard -> [[SudokuUnit]]
@@ -229,5 +241,5 @@ subslice from to step sub list
 defaultProblems = [10,500,4040,50340,30450]
 
 getPureProblem :: SudokuBoard
-getPureProblem = read "SudokuBoard {sS = 3, bS = 9, board = [Guess [1,2,3,4,5],Empty,Empty,Empty,Empty,Empty,Empty,Hint 1,Empty,Hint 4,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Hint 2,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Hint 5,Empty,Hint 4,Empty,Hint 7,Empty,Empty,Hint 8,Empty,Empty,Empty,Hint 3,Empty,Empty,Empty,Empty,Hint 1,Empty,Hint 9,Empty,Empty,Empty,Empty,Hint 3,Empty,Empty,Hint 4,Empty,Empty,Hint 2,Empty,Empty,Empty,Hint 5,Empty,Hint 1,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Hint 8,Empty,Hint 6,Empty,Empty,Empty]}"
+getPureProblem = read "SudokuBoard {sS = 3, bS = 9, board = [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Hint 1,Empty,Hint 4,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Hint 2,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Hint 5,Empty,Hint 4,Empty,Hint 7,Empty,Empty,Hint 8,Empty,Empty,Empty,Hint 3,Empty,Empty,Empty,Empty,Hint 1,Empty,Hint 9,Empty,Empty,Empty,Empty,Hint 3,Empty,Empty,Hint 4,Empty,Empty,Hint 2,Empty,Empty,Empty,Hint 5,Empty,Hint 1,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Hint 8,Empty,Hint 6,Empty,Empty,Empty]}"
 -- getPureProblem = read "SudokuBoard {sS = 3, bS = 9, board = [Hint 2,Hint 3,Hint 4,Hint 5,Hint 6,Hint 7,Hint 8,Hint 1,Hint 9,Hint 4,Hint 1,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Hint 2,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Hint 5,Empty,Hint 4,Empty,Hint 7,Empty,Empty,Hint 8,Empty,Empty,Empty,Hint 3,Empty,Empty,Empty,Empty,Hint 1,Empty,Hint 9,Empty,Empty,Empty,Empty,Hint 3,Empty,Empty,Hint 4,Empty,Empty,Hint 2,Empty,Empty,Empty,Hint 5,Empty,Hint 1,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Hint 8,Empty,Hint 6,Empty,Empty,Empty]}"
