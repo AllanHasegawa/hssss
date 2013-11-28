@@ -1,14 +1,37 @@
 module SudokuUtils
 (
-SudokuBoard,
-solveProblem
+SudokuBoard(..),
+SudokuUnit(..),
+solveProblem,
+verifySolution,
+getColsBS,
+getRowsBS,
+getColBS,
+getRowBS,
+getSS,
+getSSs,
+uniqueSudokuUnits,
+getPureProblem
 ) where
 
 import System.IO
 import Data.Char
 import Data.List
 
-data SudokuUnit = Empty | Hint Int | Guess Int deriving (Show,Read,Eq)
+data SudokuUnit =
+	Empty |
+	Hint Int |
+	Guess [Int]
+	deriving (Show,Read)
+
+instance Eq SudokuUnit where
+	Empty == Empty = True
+	Hint x == Hint y = x == y
+	Hint x == Guess (y:ys) = x == y
+	Guess (x:xs) == Guess (y:ys) = x == y
+	Guess (x:xs) == Hint y = x == y
+	Guess [] == Guess [] = True
+	_ == _ = False
 
 -- sS :: size of the small square
 -- bS :: size of the big square
@@ -128,7 +151,7 @@ getSumSS ssIndex sBoard
 
 -- Returns uniques values (without Empty)
 uniqueSudokuUnits :: [SudokuUnit] -> [SudokuUnit]
-uniqueSudokuUnits sUnits = filter (\x -> x /= Empty) $  nub sUnits
+uniqueSudokuUnits sUnits = filter (\x -> x /= Empty) $ nub sUnits
 
 -- Transforms a string line into Sudokuboard.
 -- It should be okay for inputs with numbers <9.
@@ -148,7 +171,7 @@ stringToSudokuBoard str = let
 sudokuUnitToString :: SudokuUnit -> String
 sudokuUnitToString Empty = "."
 sudokuUnitToString (Hint n) = show n
-sudokuUnitToString (Guess n) = show n
+sudokuUnitToString (Guess (x:xs)) = show x
 
 sudokuBoardToFancyString'' :: SudokuBoard -> Int -> String
 sudokuBoardToFancyString'' sBoard n
@@ -196,5 +219,5 @@ subslice from to step sub list
 defaultProblems = [10,500,4040,50340,30450]
 
 getPureProblem :: SudokuBoard
---getPureProblem = read "SudokuBoard {sS = 3, bS = 9, board = [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Hint 1,Empty,Hint 4,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Hint 2,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Hint 5,Empty,Hint 4,Empty,Hint 7,Empty,Empty,Hint 8,Empty,Empty,Empty,Hint 3,Empty,Empty,Empty,Empty,Hint 1,Empty,Hint 9,Empty,Empty,Empty,Empty,Hint 3,Empty,Empty,Hint 4,Empty,Empty,Hint 2,Empty,Empty,Empty,Hint 5,Empty,Hint 1,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Hint 8,Empty,Hint 6,Empty,Empty,Empty]}"
-getPureProblem = read "SudokuBoard {sS = 3, bS = 9, board = [Hint 2,Hint 3,Hint 4,Hint 5,Hint 6,Hint 7,Hint 8,Hint 1,Hint 9,Hint 4,Hint 1,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Hint 2,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Hint 5,Empty,Hint 4,Empty,Hint 7,Empty,Empty,Hint 8,Empty,Empty,Empty,Hint 3,Empty,Empty,Empty,Empty,Hint 1,Empty,Hint 9,Empty,Empty,Empty,Empty,Hint 3,Empty,Empty,Hint 4,Empty,Empty,Hint 2,Empty,Empty,Empty,Hint 5,Empty,Hint 1,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Hint 8,Empty,Hint 6,Empty,Empty,Empty]}"
+getPureProblem = read "SudokuBoard {sS = 3, bS = 9, board = [Guess [1,2,3,4,5],Empty,Empty,Empty,Empty,Empty,Empty,Hint 1,Empty,Hint 4,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Hint 2,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Hint 5,Empty,Hint 4,Empty,Hint 7,Empty,Empty,Hint 8,Empty,Empty,Empty,Hint 3,Empty,Empty,Empty,Empty,Hint 1,Empty,Hint 9,Empty,Empty,Empty,Empty,Hint 3,Empty,Empty,Hint 4,Empty,Empty,Hint 2,Empty,Empty,Empty,Hint 5,Empty,Hint 1,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Hint 8,Empty,Hint 6,Empty,Empty,Empty]}"
+-- getPureProblem = read "SudokuBoard {sS = 3, bS = 9, board = [Hint 2,Hint 3,Hint 4,Hint 5,Hint 6,Hint 7,Hint 8,Hint 1,Hint 9,Hint 4,Hint 1,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Hint 2,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Hint 5,Empty,Hint 4,Empty,Hint 7,Empty,Empty,Hint 8,Empty,Empty,Empty,Hint 3,Empty,Empty,Empty,Empty,Hint 1,Empty,Hint 9,Empty,Empty,Empty,Empty,Hint 3,Empty,Empty,Hint 4,Empty,Empty,Hint 2,Empty,Empty,Empty,Hint 5,Empty,Hint 1,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Hint 8,Empty,Hint 6,Empty,Empty,Empty]}"
