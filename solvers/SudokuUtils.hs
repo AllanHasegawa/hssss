@@ -3,6 +3,7 @@ module SudokuUtils
 SudokuBoard(..),
 SudokuUnit(..),
 solveProblem,
+updateBoard,
 verifySolution,
 getColsBS,
 getRowsBS,
@@ -59,6 +60,15 @@ solveProblem problemIndex solver
 		hClose handle
 		)
 	| otherwise = print "WAT?"
+
+
+updateBoard :: SudokuBoard -> Int -> [SudokuUnit] -> SudokuBoard
+updateBoard sBoard index sUnits = let
+	sBS = bS sBoard
+	sSS = sS sBoard
+	b = board sBoard
+	newSUnits = take index b ++ sUnits
+	in SudokuBoard sSS sBS newSUnits
 
 -- verify if solution is correct
 -- True solution is correct
