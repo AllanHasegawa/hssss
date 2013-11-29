@@ -54,12 +54,10 @@ solveProblem problemIndex solver
 		contents <- hGetContents handle
 		let sudokuLine = lines contents !! problemIndex
 		let sudokuBoard = stringToSudokuBoard sudokuLine
-		print $ solver sudokuBoard
-		print $ getRowBS 7 $ sudokuBoard
-		print $ getSS 7 $ sudokuBoard
+      		let sBoardSolved = solver sudokuBoard
 		putStr $ sudokuBoardToFancyString sudokuBoard
-		print $ verifySolutionRows sudokuBoard
-		print $ getRowBS 0 sudokuBoard
+		putStr $ sudokuBoardToFancyString sBoardSolved
+		print $ verifySolution sBoardSolved
 		hClose handle
 		)
 	| otherwise = print "WAT?"
