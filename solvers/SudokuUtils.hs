@@ -15,12 +15,14 @@ getRowBS,
 getSS,
 getSSs,
 uniqueSudokuUnits,
-getPureProblem
+getPureProblem,
+nub'
 ) where
 
 import System.IO
 import Data.Char
 import Data.List
+import qualified Data.Set as S
 
 data SudokuUnit =
 	Empty |
@@ -36,6 +38,17 @@ instance Eq SudokuUnit where
 	Guess (x:xs) == Hint y = x == y
 	Guess [] == Guess [] = True
 	_ == _ = False
+
+instance Ord SudokuUnit where
+	compare Empty Empty = EQ
+	compare Empty _ = LT
+	compare _ Empty = GT
+	compare (Guess []) _ = LT
+	compare _ (Guess []) = GT
+	compare (Guess (x:xs)) (Guess (y:ys)) = compare x y
+	compare (Guess (x:xs)) (Hint y) = compare x y
+	compare (Hint x) (Hint y) = compare x y
+	compare (Hint x) (Guess (y:ys)) = compare x y
 
 -- sS :: size of the small square
 -- bS :: size of the big square
@@ -171,7 +184,7 @@ getSumSS ssIndex sBoard
 
 -- Returns uniques values (without Empty)
 uniqueSudokuUnits :: [SudokuUnit] -> [SudokuUnit]
-uniqueSudokuUnits sUnits = filter (\x -> x /= Empty) $ nub sUnits
+uniqueSudokuUnits sUnits = nub' $ filter (\x -> x /= Empty) sUnits
 
 -- Transforms a string line into Sudokuboard.
 -- It should be okay for inputs with numbers <9.
@@ -236,8 +249,13 @@ subslice from to step sub list
 	| otherwise = (slice from (from+sub) 1 list)
 		++ (subslice (from+step) to step sub list)
 
-defaultProblems = [10,500,4040,50340,30450]
+-- nub with (Ord) by http://buffered.io/posts/a-better-nub/
+nub' :: (Ord a) => [a] -> [a]
+nub' = go S.empty
+	where 	go _ [] = []
+       		go s (x:xs)
+		 | S.member x s = go s xs
+		 | otherwise    = x : go (S.insert x s) xs
 
 getPureProblem :: SudokuBoard
 getPureProblem = read "SudokuBoard {sS = 3, bS = 9, board = [Empty,Empty,Empty,Empty,Empty,Empty,Empty,Hint 1,Empty,Hint 4,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Hint 2,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Hint 5,Empty,Hint 4,Empty,Hint 7,Empty,Empty,Hint 8,Empty,Empty,Empty,Hint 3,Empty,Empty,Empty,Empty,Hint 1,Empty,Hint 9,Empty,Empty,Empty,Empty,Hint 3,Empty,Empty,Hint 4,Empty,Empty,Hint 2,Empty,Empty,Empty,Hint 5,Empty,Hint 1,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Hint 8,Empty,Hint 6,Empty,Empty,Empty]}"
--- getPureProblem = read "SudokuBoard {sS = 3, bS = 9, board = [Hint 2,Hint 3,Hint 4,Hint 5,Hint 6,Hint 7,Hint 8,Hint 1,Hint 9,Hint 4,Hint 1,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Hint 2,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Hint 5,Empty,Hint 4,Empty,Hint 7,Empty,Empty,Hint 8,Empty,Empty,Empty,Hint 3,Empty,Empty,Empty,Empty,Hint 1,Empty,Hint 9,Empty,Empty,Empty,Empty,Hint 3,Empty,Empty,Hint 4,Empty,Empty,Hint 2,Empty,Empty,Empty,Hint 5,Empty,Hint 1,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Empty,Hint 8,Empty,Hint 6,Empty,Empty,Empty]}"
