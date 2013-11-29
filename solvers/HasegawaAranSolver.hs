@@ -1,3 +1,8 @@
+module HasegawaAranSolver
+(
+mySolver
+) where
+
 import Data.List
 import SudokuUtils as SU
 import Debug.Trace
@@ -14,7 +19,7 @@ mySolver sBoard = let
 lenGuesses (Guess x) = length x
 remGuess (Guess (x:xs)) = Guess xs
 
-solve oBoard uBoard False n end | trace ("solve " ++ (show n)) False = undefined
+-- solve oBoard uBoard False n end | trace ("solve " ++ (show n)) False = undefined
 
 solve oBoard uBoard backing n end
 	| n == end = uBoard
