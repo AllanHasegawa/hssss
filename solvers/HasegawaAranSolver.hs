@@ -55,10 +55,10 @@ genGuesses sBoard index = let
 
 getUniques :: SudokuBoard -> Int -> [SudokuUnit]
 getUniques sBoard index = let
-	uSS = uniqueSudokuUnits $ getSS (iBStoSS sBoard index) sBoard
-	uCol = uniqueSudokuUnits $ getColBS (iBStoCol sBoard index) sBoard
-	uRow = uniqueSudokuUnits $ getRowBS (iBStoRow sBoard index) sBoard
-	in nub $ uSS `union` uCol `union` uRow
+	uSS = getSS (iBStoSS sBoard index) sBoard
+	uCol = getColBS (iBStoCol sBoard index) sBoard
+	uRow = getRowBS (iBStoRow sBoard index) sBoard
+	in uniqueSudokuUnits $ uSS ++ uCol ++ uRow
 
 iBStoCol :: SudokuBoard -> Int -> Int
 iBStoCol sBoard index = index `mod` (bS sBoard)
