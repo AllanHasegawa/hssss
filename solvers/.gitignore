@@ -3,3 +3,6 @@
 /HasegawaAranSolver.o
 /SudokuUtils.hi
 /SudokuUtils.o
+/*.hi
+/*.o
+/hssss
