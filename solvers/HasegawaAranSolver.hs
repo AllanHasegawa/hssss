@@ -11,7 +11,7 @@ main = do
 	SU.solveProblem 0 mySolver
 	-- print $ head problem 
 
-mySolver :: SudokuBoard -> SudokuBoard
+mySolver :: SudokuBoard -> [SudokuBoard]
 mySolver sBoard = let
 	sBS = bS sBoard
 	in solve sBoard sBoard False 0 (sBS*sBS)
@@ -22,7 +22,8 @@ remGuess (Guess (x:xs)) = Guess xs
 -- solve oBoard uBoard False n end | trace ("solve " ++ (show n)) False = undefined
 
 solve oBoard uBoard backing n end
-	| n == end = uBoard
+	| n == -1 = []
+	| n == end = uBoard:(solve oBoard uBoard True (n-1) end)
 	| isEmpty x = let
 		g = genGuesses uBoard n
 		l = lenGuesses g

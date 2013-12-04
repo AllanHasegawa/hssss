@@ -60,7 +60,7 @@ data SudokuBoard = SudokuBoard {
 			} deriving (Show,Read)
 
 
-solveProblem :: Int -> (SudokuBoard -> SudokuBoard) -> IO ()
+solveProblem :: Int -> (SudokuBoard -> [SudokuBoard]) -> IO ()
 solveProblem problemIndex solver
 	| problemIndex >= 0 = (do
 		handle <- openFile "../problems/sudoku17.txt" ReadMode
@@ -69,8 +69,9 @@ solveProblem problemIndex solver
 		let sudokuBoard = stringToSudokuBoard sudokuLine
       		let sBoardSolved = solver sudokuBoard
 		putStr $ sudokuBoardToFancyString sudokuBoard
-		putStr $ sudokuBoardToFancyString sBoardSolved
-		print $ verifySolution sBoardSolved
+		putStr $ show $ length sBoardSolved
+		putStr $ concat $ map sudokuBoardToFancyString sBoardSolved
+		--print $ verifySolution sBoardSolved
 		hClose handle
 		)
 	| otherwise = print "WAT?"
